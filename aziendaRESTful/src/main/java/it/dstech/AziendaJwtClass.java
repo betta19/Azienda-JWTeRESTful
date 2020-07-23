@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import it.dstech.model.Authority;
 import it.dstech.model.User;
+import it.dstech.repository.AuthorityRepository;
+import it.dstech.repository.UserRepository;
 
 @EnableJpaRepositories
 @SpringBootApplication
@@ -58,7 +60,7 @@ public class AziendaJwtClass {
 				user.setAuthorities(authorities);
 				user.setEnabled(true);
 				user.setEmail("azienda");
-				user.setPassword(passwordEncoder.encode("pollo"));
+//				user.setPassword(passwordEncoder.encode("pollo"));
 
 				user = userRepository.save(user);
 
