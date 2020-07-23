@@ -135,17 +135,17 @@ public class JwtTokenUtil implements Serializable {
         return expiration.before(new Date());
     }
 
-    private String generateAudience(Device device) {
-        String audience = AUDIENCE_UNKNOWN;
-        if (device.isNormal()) {
-            audience = AUDIENCE_WEB;
-        } else if (device.isTablet()) {
-            audience = AUDIENCE_TABLET;
-        } else if (device.isMobile()) {
-            audience = AUDIENCE_MOBILE;
-        }
-        return audience;
-    }
+//    private String generateAudience(Device device) {
+//        String audience = AUDIENCE_UNKNOWN;
+//        if (device.isNormal()) {
+//            audience = AUDIENCE_WEB;
+//        } else if (device.isTablet()) {
+//            audience = AUDIENCE_TABLET;
+//        } else if (device.isMobile()) {
+//            audience = AUDIENCE_MOBILE;
+//        }
+//        return audience;
+//    }
 
     private Boolean ignoreTokenExpiration(String token) {
         String audience = getAudienceFromToken(token);
