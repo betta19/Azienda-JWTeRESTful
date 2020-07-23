@@ -60,7 +60,7 @@ public class AziendaJwtClass {
 				user.setAuthorities(authorities);
 				user.setEnabled(true);
 				user.setEmail("azienda");
-//				user.setPassword(passwordEncoder.encode("pollo"));
+				user.setPassword(passwordEncoder.encode("pollo"));
 
 				user = userRepository.save(user);
 
