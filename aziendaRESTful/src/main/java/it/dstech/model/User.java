@@ -12,8 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 
 @Entity
@@ -23,17 +21,12 @@ public class User {
 
     @Id
     @Column(name = "EMAIL", length = 50, unique = true)
-    @NotNull
-    @Size(min = 4, max = 50)
     private String email;
 
     @Column(name = "PASSWORD", length = 100)
-    @NotNull
-    @Size(min = 4, max = 100)
     private String password;
 
     @Column(name = "ENABLED")
-    @NotNull
     private Boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER)

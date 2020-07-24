@@ -1,7 +1,6 @@
 package it.dstech.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -17,7 +16,6 @@ public class Authority {
     private Long id;
 
     @Column(name = "NAME", length = 50)
-    @NotNull
     private String name;
 
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)

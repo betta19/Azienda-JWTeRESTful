@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -25,16 +23,12 @@ public class Servizio {
 	private Long id;
 	
 	  @Column(name = "TIPOLOGIA", length = 100)
-	    @NotNull
-	    @Size(min = 4, max = 100)
 	    private String tipologia;
 	  
 	  @Column(name = "QTA_DISP")
-	    @NotNull
 	    private int qtaDisp;
 	  
 	  @Column(name = "QTA_TOT")
-	    @NotNull
 	    private int qtaTot;
 	  
 	  @ManyToMany(mappedBy = "servizio", fetch = FetchType.LAZY)
