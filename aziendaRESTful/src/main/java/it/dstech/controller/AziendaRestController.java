@@ -8,6 +8,7 @@ import it.dstech.service.JwtAuthenticationResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,8 +33,17 @@ public class AziendaRestController {
     @Value("${jwt.header}")
     private String tokenHeader;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return new AuthenticationManager() {
+			
+			@Override
+			public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
+    }
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -42,8 +52,9 @@ public class AziendaRestController {
     private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "public/login", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException, JsonProcessingException {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) throws Exception {
 
+    	AuthenticationManager authenticationManager = authenticationManagerBean();
         // Effettuo l autenticazione
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

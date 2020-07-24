@@ -3,9 +3,9 @@ package it.dstech;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.apache.catalina.core.ApplicationContext;
+//import javax.sql.DataSource;
+//
+//import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,10 +23,10 @@ import it.dstech.repository.UserRepository;
 @SpringBootApplication
 public class AziendaJwtClass {
 	
-	@Autowired
-	private DataSource datasource;
-	@Autowired
-	private ApplicationContext webApplicationContext;
+//	@Autowired
+//	private DataSource datasource;
+//	@Autowired
+//	private ApplicationContext webApplicationContext;
 
 	@Autowired
 	PasswordEncoder passwordEncoder;

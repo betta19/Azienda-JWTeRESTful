@@ -13,6 +13,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity
 @Table(name = "USERS")
@@ -35,6 +37,13 @@ public class User {
             joinColumns = {@JoinColumn(name = "USER_EMAIL", referencedColumnName = "EMAIL")},
             inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private List<Authority> authorities;
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Servizio> servizio;
+    
+    @Column(name = "COUNT")
+    private int count;
 
 
     public String getEmail() {
@@ -69,6 +78,24 @@ public class User {
     public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
     }
+
+	public List<Servizio> getServizio() {
+		return servizio;
+	}
+
+	public void setServizio(List<Servizio> servizio) {
+		this.servizio = servizio;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+    
+    
 
 
 }
