@@ -10,9 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import it.dstech.memento.Memento;
 
 @Entity
 @Table(name = "SERVIZIO")
@@ -21,7 +22,7 @@ public class Servizio {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	@Column(name = "TIPOLOGIA", length = 100, unique = true)
 	private String tipologia;
 
@@ -74,4 +75,5 @@ public class Servizio {
 	public void setUsers(List<User> users) {
 		this.users = users;
 	}
+	
 }

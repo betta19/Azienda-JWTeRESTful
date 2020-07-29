@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+import it.dstech.memento.Memento;
+import it.dstech.memento.ServizioCaretaker;
 import it.dstech.model.Servizio;
-import it.dstech.repository.ServizioRepository;
 import it.dstech.security.JwtAuthenticationRequest;
 import it.dstech.security.JwtTokenUtil;
 import it.dstech.service.JwtAuthenticationResponse;
@@ -54,6 +54,9 @@ public class AziendaRestController {
 
 	@Autowired
 	private ServizioDAOImpl service;
+	
+	@Autowired
+	private ServizioCaretaker careTaker;
 
 	@RequestMapping(value = "public/login", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
@@ -93,53 +96,39 @@ public class AziendaRestController {
 	}
 
 	@RequestMapping(value = "protected/aggiungiServizio", method = RequestMethod.POST)
-	public boolean  aggiungiServizio(HttpServletRequest request, HttpServletResponse response,
+	public boolean aggiungiServizio(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody Servizio servizio) {
 		String token = request.getHeader(tokenHeader);
-		UserDetails userDetails =jwtTokenUtil.getUserDetails(token);
-
-		 if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("AZIENDA"))) {
-	          service.salvaServizio(servizio);
-	          return true;
-	          }
-		return false;
+		UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
+		
+		if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("AZIENDA"))) {
+			service.salvaServizio(servizio);
+			careTaker.getMementos().add(new Memento(servizio));
+			return true;
 		}
-	
+		return false;
+	}
+
 	@RequestMapping(value = "protected/listaServizi", method = RequestMethod.POST)
 	public List<Servizio> listaServizi(HttpServletRequest request, HttpServletResponse response) {
 		String token = request.getHeader(tokenHeader);
-		UserDetails userDetails =jwtTokenUtil.getUserDetails(token);
+		UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
 
 		if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("AZIENDA"))) {
 			return null;
-			}
+		}
 		return service.findAll();
-	 }
-	
+	}
+
 	@RequestMapping(value = "protected/serviziDisponibili", method = RequestMethod.POST)
 	public List<Servizio> listaServiziDisponibili(HttpServletRequest request, HttpServletResponse response) {
 		String token = request.getHeader(tokenHeader);
-		UserDetails userDetails =jwtTokenUtil.getUserDetails(token);
+		UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
 
 		if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("DIPENDENTE"))) {
 			return null;
-			}
+		}
 		return service.findServiziDisp();
-	 }
-	
-	
+	}
+
 }
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
