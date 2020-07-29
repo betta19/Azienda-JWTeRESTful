@@ -1,5 +1,6 @@
 package it.dstech.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,13 +21,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import it.dstech.memento.Memento;
 import it.dstech.memento.ServizioCaretaker;
 import it.dstech.model.Servizio;
+import it.dstech.model.User;
+import it.dstech.repository.ServizioRepository;
 import it.dstech.security.JwtAuthenticationRequest;
 import it.dstech.security.JwtTokenUtil;
 import it.dstech.service.JwtAuthenticationResponse;
+import it.dstech.service.JwtUserDetailsServiceImpl;
 import it.dstech.service.ServizioDAOImpl;
 
 @RestController
@@ -55,8 +60,15 @@ public class AziendaRestController {
 	@Autowired
 	private ServizioDAOImpl service;
 	
+	@Bean
+	public ServizioCaretaker careTaker() throws Exception{
+		return new ServizioCaretaker();
+	}
+	
 	@Autowired
-	private ServizioCaretaker careTaker;
+	private JwtUserDetailsServiceImpl userService;
+	
+	
 
 	@RequestMapping(value = "public/login", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
@@ -97,13 +109,14 @@ public class AziendaRestController {
 
 	@RequestMapping(value = "protected/aggiungiServizio", method = RequestMethod.POST)
 	public boolean aggiungiServizio(HttpServletRequest request, HttpServletResponse response,
-			@RequestBody Servizio servizio) {
+			@RequestBody Servizio servizio) throws Exception {
 		String token = request.getHeader(tokenHeader);
 		UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
 		
 		if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("AZIENDA"))) {
 			service.salvaServizio(servizio);
-			careTaker.getMementos().add(new Memento(servizio));
+			ServizioCaretaker care = careTaker();
+			care.getMementos().add(new Memento(servizio));
 			return true;
 		}
 		return false;
@@ -119,6 +132,27 @@ public class AziendaRestController {
 		}
 		return service.findAll();
 	}
+	
+	@RequestMapping(value = "protected/resetServizi", method = RequestMethod.POST)
+	public boolean reset(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String token = request.getHeader(tokenHeader);
+		UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
+		
+		if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("AZIENDA"))) {
+			ServizioCaretaker care = careTaker();
+			for (Memento memento : care.getMementos()) {
+				service.salva(memento.getServizio());
+			}
+			
+			for (User user : userService.findAll()) {
+				user.setServizio(new ArrayList<>());
+				user.setCount(3);
+				userService.salvaUtente(user);
+			}
+			return true;
+		}
+		return false;
+	}
 
 	@RequestMapping(value = "protected/serviziDisponibili", method = RequestMethod.POST)
 	public List<Servizio> listaServiziDisponibili(HttpServletRequest request, HttpServletResponse response) {
@@ -130,5 +164,28 @@ public class AziendaRestController {
 		}
 		return service.findServiziDisp();
 	}
+	
+	@RequestMapping(value = "protected/scegliServizi", method = RequestMethod.POST)
+	public boolean scegliServizio(HttpServletRequest request, HttpServletResponse response, @RequestParam String tipologia) {
+		String token = request.getHeader(tokenHeader);
+		UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
+
+		if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("DIPENDENTE"))) {
+			System.out.println("////////////////" +tipologia);
+			System.out.println("///////////////////////////" +jwtTokenUtil.getUsernameFromToken(token));
+			
+		
+			if(userService.aggiungiServizio(userService.cercaUtente(jwtTokenUtil.getUsernameFromToken(token)), service.findServizio(tipologia))) {
+				return true;
+			}
+			return false;
+		}
+		
+		return false;
+		
+	}
+	
+	
+	
 
 }

@@ -24,19 +24,29 @@ public class ServizioDAOImpl {
 
 		return true;
 	}
-	
+
+	public void salva(Servizio servizio) {
+
+		servizioRepo.save(servizio);
+
+	}
+
 	public List<Servizio> findAll() {
 		return servizioRepo.findAll();
 	}
 	
-	public List<Servizio> findServiziDisp(){
+	public Servizio findServizio(String tipologia) {
+		return servizioRepo.findByTipologia(tipologia);
+	}
+
+	public List<Servizio> findServiziDisp() {
 		List<Servizio> list = new ArrayList<Servizio>();
 		for (Servizio servizio : servizioRepo.findAll()) {
-			if(servizio.getQtaDisp() > 0) {
+			if (servizio.getQtaDisp() > 0) {
 				list.add(servizio);
 			}
 		}
 		return list;
 	}
-	
+
 }

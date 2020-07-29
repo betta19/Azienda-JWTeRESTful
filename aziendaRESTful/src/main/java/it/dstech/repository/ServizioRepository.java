@@ -10,7 +10,9 @@ import it.dstech.model.Servizio;
 @Repository
 public interface ServizioRepository extends JpaRepository<Servizio, Long>{
 
-	Servizio findByTipologia (String tipologia);
+	
 	
 	List<Servizio> findAll();
+
+	Servizio findByTipologia(String tipologia);
 }

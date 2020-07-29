@@ -13,6 +13,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 
@@ -43,7 +45,7 @@ public class User {
     private List<Servizio> servizio;
     
     @Column(name = "COUNT")
-    private int count;
+    private int count = 3;
 
 
     public String getEmail() {
