@@ -1,5 +1,7 @@
 package it.dstech.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,7 +41,6 @@ public class AziendaRestController {
 
 			@Override
 			public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-				// TODO Auto-generated method stub
 				return null;
 			}
 		};
@@ -51,7 +53,7 @@ public class AziendaRestController {
 	private UserDetailsService userDetailsService;
 
 	@Autowired
-	private ServizioDAOImpl servizioRepo;
+	private ServizioDAOImpl service;
 
 	@RequestMapping(value = "public/login", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
@@ -90,21 +92,54 @@ public class AziendaRestController {
 		}
 	}
 
-	@RequestMapping(value = "protected/aggiungiservizio", method = RequestMethod.POST)
-	public ResponseEntity<?> aggiungiServizio(HttpServletRequest request, HttpServletResponse response,
-			Servizio servizio) {
+	@RequestMapping(value = "protected/aggiungiServizio", method = RequestMethod.POST)
+	public boolean  aggiungiServizio(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody Servizio servizio) {
 		String token = request.getHeader(tokenHeader);
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails =jwtTokenUtil.getUserDetails(token);
 
-		if (jwtTokenUtil.canTokenBeRefreshed(token)) {
-			String refreshedToken = jwtTokenUtil.refreshToken(token);
-			response.setHeader(tokenHeader, refreshedToken);
-			servizioRepo.salvaServizio(servizio);
-			return ResponseEntity
-					.ok(new JwtAuthenticationResponse(userDetails.getUsername(), userDetails.getAuthorities()));
-		} else {
-			return ResponseEntity.badRequest().body(null);
+		 if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("AZIENDA"))) {
+	          service.salvaServizio(servizio);
+	          return true;
+	          }
+		return false;
 		}
-	}
+	
+	@RequestMapping(value = "protected/listaServizi", method = RequestMethod.POST)
+	public List<Servizio> listaServizi(HttpServletRequest request, HttpServletResponse response) {
+		String token = request.getHeader(tokenHeader);
+		UserDetails userDetails =jwtTokenUtil.getUserDetails(token);
 
+		if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("AZIENDA"))) {
+			return null;
+			}
+		return service.findAll();
+	 }
+	
+	@RequestMapping(value = "protected/serviziDisponibili", method = RequestMethod.POST)
+	public List<Servizio> listaServiziDisponibili(HttpServletRequest request, HttpServletResponse response) {
+		String token = request.getHeader(tokenHeader);
+		UserDetails userDetails =jwtTokenUtil.getUserDetails(token);
+
+		if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("DIPENDENTE"))) {
+			return null;
+			}
+		return service.findServiziDisp();
+	 }
+	
+	
 }
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
